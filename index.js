@@ -38,16 +38,37 @@ function start() {
         ],
       },
     ])
-    .then(function (ans) {
-      if (ans.start === "Add department, role, or employee") {
-        console.log("add someone");
-      } else if (ans.start === "View departments, roles, employees") {
+    .then(function ({ start }) {
+      if (start === "Add department, role, or employee") {
+        addSomething();
+      } else if (start === "View departments, roles, employees") {
         console.log("View everything");
-      } else if (ans.start === "Update employee roles") {
+      } else if (start === "Update employee roles") {
         console.log("Update things");
       } else {
         console.log("Goodbye!");
         connection.end();
+      }
+    });
+}
+
+function addSomething() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "add",
+        message: "What would you like to add?",
+        choices: ["Department", "Role", "Employee"],
+      },
+    ])
+    .then(function (ans) {
+      if (ans.add === "Department") {
+        console.log("department");
+      } else if (ans.add === "Role") {
+        console.log("role");
+      } else {
+        console.log("employee");
       }
     });
 }
