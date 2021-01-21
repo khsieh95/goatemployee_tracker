@@ -10,4 +10,4 @@ INSERT INTO employee (first_name, last_name, role_id)
 VALUES ("Kevin", "Shay",1),("Kevin","Lions",2);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Kevin", "Hsieh",1,1),("Kevin","Lyons",2,2);
+VALUES ("erqwerqewr", "cdsfd",1,1),("fsdf","cfsdfsd",2,2);

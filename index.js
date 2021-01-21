@@ -31,7 +31,7 @@ function start() {
         message: "What would you like to do?",
         name: "start",
         choices: [
-          "Add department, role, or employee",
+          "Add department, role, and employee",
           "View departments, roles, employees",
           "Update employee roles",
           "Quit",
@@ -39,7 +39,7 @@ function start() {
       },
     ])
     .then(function ({ start }) {
-      if (start === "Add department, role, or employee") {
+      if (start === "Add department, role, and employee") {
         addSomething();
       } else if (start === "View departments, roles, employees") {
         viewEverything();
@@ -57,57 +57,65 @@ function addSomething() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "add",
-        message: "What would you like to add?",
-        choices: ["Department", "Role", "Employee"],
+        type: "input",
+        name: "firstName",
+        message: "What is the first name of the employee?",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "What is the last name of the employee?",
+      },
+      {
+        type: "input",
+        name: "role",
+        message: "What is the role of the employee?",
+      },
+      {
+        type: "input",
+        name: "department",
+        message: "What department is the employee in?",
       },
     ])
     .then(function (ans) {
-      if (ans.add === "Department") {
-        console.log("department");
-      } else if (ans.add === "Role") {
-        console.log("role");
-      } else {
-        console.log("employee");
+      if (ans.firstName === "What is the first name of the employee?") {
+        connection.query("INSERT INTO ");
+      } else if (ans.lastName === "What is the last name of the employee?") {
+      } else if (ans.role === "What is the role of the employee?") {
       }
       start();
     });
 }
 
 function viewEverything() {
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "view",
-        message: "What would you like to view?",
-        choices: ["Departments", "Roles", "Employees"],
-      },
-    ])
-    .then(function (ans) {
-      if (ans.view === "Departments") {
-        console.log("view department");
-      } else if (ans.view === "Roles") {
-        console.log("view roles");
+  connection.query(
+    "SELECT employees.first_name, employees.last_name, roles.title, departments.department, roles.salary FROM employees JOIN roles ON employees.role_id=roles.id JOIN departments ON roles.department_id=departments.id",
+    function (err, res) {
+      if (err) {
+        throw err;
       } else {
-        console.log("view employees");
+        console.table(res);
+        start();
       }
-      start();
-    });
+    }
+  );
 }
 
 function updateEmployee() {
   const employee = connection.query(
-    "SELECT first_name,last_name FROM employee_tracker_db.employee"
+    "SELECT * FROM employee_tracker_db.employee"
   );
 
-  inquirer.prompt([
-    {
-      type: "list",
-      name: "udpate",
-      message: "Who would you like to update?",
-      choices: employee,
-    },
-  ]);
+  const employeeArray = [];
+  employeeArray.push(employee);
+  console.table(employeeArray);
+
+  //   inquirer.prompt([
+  //     {
+  //       type: "list",
+  //       name: "udpate",
+  //       message: "Who would you like to update?",
+  //       choices: employee,
+  //     },
+  //   ]);
 }
