@@ -37,20 +37,8 @@ function start() {
       if (start === "Add") {
         console.log("adding");
         add();
-      } else if (start === "Add Department") {
-        console.log("add department");
-      } else if (start === "Add Role") {
-        console.log("add Role");
-      } else if (start === "View Departments") {
-        console.log("view department");
-        viewDepartments();
-      } else if (start === "View Roles") {
-        viewRoles();
-        console.log("view roles");
-      } else if (start === "View Employees") {
-        console.log("view employees");
-      } else if (start === "Update Employee Roles") {
-        console.log("update employee roles");
+      } else if (start === "View") {
+        view();
       } else {
         connection.end();
       }
@@ -90,13 +78,19 @@ function addEmployee() {
       {
         type: "list",
         name: "role",
-        message: "What is the employee's role?",
+        message: "Select the role",
         choices: [
           "Accountant",
           "Software Engineer",
           "Product Manager",
           "Recruiter",
         ],
+      },
+      {
+        type: "list",
+        name: "department",
+        message: "Select the department",
+        choices: ["HR", "Finance", "Tech"],
       },
     ])
     .then(function (ans) {
@@ -107,10 +101,33 @@ function addEmployee() {
           if (err) {
             throw err;
           } else {
-            console.log("first name added");
+            console.table(res);
           }
         }
       );
+    });
+}
+
+function view() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "view",
+        message: "What would you like to view?",
+        choices: ["Employees", "Departments", "Roles", "All"],
+      },
+    ])
+    .then(function (ans) {
+      if (ans.view === "Departments") {
+        viewDepartments();
+      } else if (ans.view === "Roles") {
+        viewRoles();
+      } else if (ans.view === "Employees") {
+        viewEmployees();
+      } else {
+        viewAll();
+      }
     });
 }
 
@@ -129,6 +146,34 @@ function viewDepartments() {
 function viewRoles() {
   connection.query(
     "SELECT * FROM employee_tracker_db.roles;",
+    function (err, res) {
+      if (err) {
+        throw err;
+      } else {
+        console.table(res);
+        start();
+      }
+    }
+  );
+}
+
+function viewEmployees() {
+  connection.query(
+    "SELECT * FROM employee_tracker_db.employees",
+    function (err, res) {
+      if (err) {
+        throw err;
+      } else {
+        console.table(res);
+        start();
+      }
+    }
+  );
+}
+
+function viewAll() {
+  connection.query(
+    "SELECT employees.first_name, employees.last_name, roles.title, departments.department,roles.salary FROM employees JOIN roles ON employees.role_id=roles.id JOIN departments ON roles.department_id=departments.id",
     function (err, res) {
       if (err) {
         throw err;
