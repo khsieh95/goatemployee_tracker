@@ -42,8 +42,9 @@ function start() {
       if (start === "Add department, role, or employee") {
         addSomething();
       } else if (start === "View departments, roles, employees") {
-        console.log("View everything");
+        viewEverything();
       } else if (start === "Update employee roles") {
+        updateEmployee();
         console.log("Update things");
       } else {
         console.log("Goodbye!");
@@ -70,5 +71,43 @@ function addSomething() {
       } else {
         console.log("employee");
       }
+      start();
     });
+}
+
+function viewEverything() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "view",
+        message: "What would you like to view?",
+        choices: ["Departments", "Roles", "Employees"],
+      },
+    ])
+    .then(function (ans) {
+      if (ans.view === "Departments") {
+        console.log("view department");
+      } else if (ans.view === "Roles") {
+        console.log("view roles");
+      } else {
+        console.log("view employees");
+      }
+      start();
+    });
+}
+
+function updateEmployee() {
+  const employee = connection.query(
+    "SELECT first_name,last_name FROM employee_tracker_db.employee"
+  );
+
+  inquirer.prompt([
+    {
+      type: "list",
+      name: "udpate",
+      message: "Who would you like to update?",
+      choices: employee,
+    },
+  ]);
 }
