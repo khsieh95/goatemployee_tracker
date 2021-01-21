@@ -30,31 +30,51 @@ function start() {
         type: "list",
         message: "What would you like to do?",
         name: "start",
-        choices: [
-          "Add department, role, and employee",
-          "View departments, roles, employees",
-          "Update employee roles",
-          "Quit",
-        ],
+        choices: ["Add", "View", "Update Employee Roles", "Quit"],
       },
     ])
     .then(function ({ start }) {
-      if (start === "Add department, role, and employee") {
+      if (start === "Add") {
         console.log("adding");
-        addSomething();
-      } else if (start === "View departments, roles, employees") {
-        viewEverything();
-      } else if (start === "Update employee roles") {
-        updateEmployee();
-        console.log("Update things");
+        add();
+      } else if (start === "Add Department") {
+        console.log("add department");
+      } else if (start === "Add Role") {
+        console.log("add Role");
+      } else if (start === "View Departments") {
+        console.log("view department");
+        viewDepartments();
+      } else if (start === "View Roles") {
+        viewRoles();
+        console.log("view roles");
+      } else if (start === "View Employees") {
+        console.log("view employees");
+      } else if (start === "Update Employee Roles") {
+        console.log("update employee roles");
       } else {
-        console.log("Goodbye!");
         connection.end();
       }
     });
 }
 
-function addSomething() {
+function add() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "add",
+        message: "What would you like to add?",
+        choices: ["Employee", "Department", "Role"],
+      },
+    ])
+    .then(function (ans) {
+      if (ans.add === "Employee") {
+        addEmployee();
+      }
+    });
+}
+
+function addEmployee() {
   inquirer
     .prompt([
       {
@@ -67,19 +87,19 @@ function addSomething() {
         name: "lastName",
         message: "What is the last name of the employee?",
       },
-      //   {
-      //     type: "input",
-      //     name: "role",
-      //     message: "What is the role of the employee?",
-      //   },
       {
-        type: "input",
-        name: "department",
-        message: "What department is the employee in?",
+        type: "list",
+        name: "role",
+        message: "What is the employee's role?",
+        choices: [
+          "Accountant",
+          "Software Engineer",
+          "Product Manager",
+          "Recruiter",
+        ],
       },
     ])
     .then(function (ans) {
-      const namesArray = [];
       connection.query(
         "INSERT INTO employees (first_name, last_name) VALUES (?,?)",
         [ans.firstName, ans.lastName],
@@ -91,48 +111,24 @@ function addSomething() {
           }
         }
       );
-
-      //   connection.query(
-      //     "INSERT INTO employees (last_name) VALUES (?)",
-      //     ans.lastName,
-      //     function (err, res) {
-      //       if (err) {
-      //         throw err;
-      //       } else {
-      //         console.log("last name added");
-      //       }
-      //     }
-      //   );
-
-      //   connection.query(
-      //     "INSERT INTO roles (title) VALUES (?)",
-      //     [ans.role],
-      //     function (err, res) {
-      //       if (err) {
-      //         throw err;
-      //       } else {
-      //         console.log("Role Added!");
-      //       }
-      //     }
-      //   );
-      connection.query(
-        "INSERT INTO departments (department) VALUES (?)",
-        [ans.department],
-        function (err, res) {
-          if (err) {
-            throw err;
-          } else {
-            console.log("Department Added!");
-            start();
-          }
-        }
-      );
     });
 }
 
-function viewEverything() {
+function viewDepartments() {
   connection.query(
-    "SELECT employees.first_name, employees.last_name, roles.title, departments.department, roles.salary FROM employees JOIN roles ON employees.role_id=roles.id JOIN departments ON roles.department_id=departments.id",
+    "SELECT * FROM employee_tracker_db.departments;",
+    function (err, res) {
+      if (err) {
+        throw err;
+      } else console.table(res);
+      start();
+    }
+  );
+}
+
+function viewRoles() {
+  connection.query(
+    "SELECT * FROM employee_tracker_db.roles;",
     function (err, res) {
       if (err) {
         throw err;

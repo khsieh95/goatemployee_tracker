@@ -4,7 +4,7 @@ CREATE DATABASE employee_tracker_db;
 USE employee_tracker_db;
 
 CREATE TABLE  departments (
-    id INTEGER NOT NULL AUTO_INCREMENT,
+    id INTEGER NOT NULL AUTO_INCREMENT ,
     department VARCHAR (30),
     PRIMARY KEY(id)
 );
