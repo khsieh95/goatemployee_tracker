@@ -40,6 +40,7 @@ function start() {
     ])
     .then(function ({ start }) {
       if (start === "Add department, role, and employee") {
+        console.log("adding");
         addSomething();
       } else if (start === "View departments, roles, employees") {
         viewEverything();
@@ -66,11 +67,11 @@ function addSomething() {
         name: "lastName",
         message: "What is the last name of the employee?",
       },
-      {
-        type: "input",
-        name: "role",
-        message: "What is the role of the employee?",
-      },
+      //   {
+      //     type: "input",
+      //     name: "role",
+      //     message: "What is the role of the employee?",
+      //   },
       {
         type: "input",
         name: "department",
@@ -78,12 +79,54 @@ function addSomething() {
       },
     ])
     .then(function (ans) {
-      if (ans.firstName === "What is the first name of the employee?") {
-        connection.query("INSERT INTO ");
-      } else if (ans.lastName === "What is the last name of the employee?") {
-      } else if (ans.role === "What is the role of the employee?") {
-      }
-      start();
+      const namesArray = [];
+      connection.query(
+        "INSERT INTO employees (first_name, last_name) VALUES (?,?)",
+        [ans.firstName, ans.lastName],
+        function (err, res) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("first name added");
+          }
+        }
+      );
+
+      //   connection.query(
+      //     "INSERT INTO employees (last_name) VALUES (?)",
+      //     ans.lastName,
+      //     function (err, res) {
+      //       if (err) {
+      //         throw err;
+      //       } else {
+      //         console.log("last name added");
+      //       }
+      //     }
+      //   );
+
+      //   connection.query(
+      //     "INSERT INTO roles (title) VALUES (?)",
+      //     [ans.role],
+      //     function (err, res) {
+      //       if (err) {
+      //         throw err;
+      //       } else {
+      //         console.log("Role Added!");
+      //       }
+      //     }
+      //   );
+      connection.query(
+        "INSERT INTO departments (department) VALUES (?)",
+        [ans.department],
+        function (err, res) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("Department Added!");
+            start();
+          }
+        }
+      );
     });
 }
 
