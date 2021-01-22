@@ -116,10 +116,10 @@ function addEmployee() {
             throw err;
           } else {
             console.log("role added");
+            start();
           }
         }
       );
-      start();
     });
 }
 
@@ -130,7 +130,7 @@ function view() {
         type: "list",
         name: "view",
         message: "What would you like to view?",
-        choices: ["Employees", "Departments", "Roles", "All"],
+        choices: ["Employees", "Departments", "Roles"],
       },
     ])
     .then(function (ans) {
@@ -140,8 +140,6 @@ function view() {
         viewRoles();
       } else if (ans.view === "Employees") {
         viewEmployees();
-      } else {
-        viewAll();
       }
     });
 }
@@ -175,20 +173,6 @@ function viewRoles() {
 function viewEmployees() {
   connection.query(
     "SELECT * FROM employee_tracker_db.employees",
-    function (err, res) {
-      if (err) {
-        throw err;
-      } else {
-        console.table(res);
-        start();
-      }
-    }
-  );
-}
-
-function viewAll() {
-  connection.query(
-    "SELECT employees.first_name, employees.last_name, roles.title, departments.department,roles.salary FROM employees JOIN roles ON employees.role_id=roles.id JOIN departments ON roles.department_id=departments.id",
     function (err, res) {
       if (err) {
         throw err;
