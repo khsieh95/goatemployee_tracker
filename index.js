@@ -119,6 +119,7 @@ function addEmployee() {
           }
         }
       );
+      start();
     });
 }
 
@@ -204,28 +205,63 @@ function updateEmployee() {
   let emptyInfoArray;
   const titleArray = [];
   let roleInfoArray;
-  connection.query("SELECT title FROM roles", function (err, res) {
+  connection.query("SELECT id,title FROM roles", function (err, res) {
     if (err) {
       throw err;
     } else {
       for (i = 0; i < res.length; i++) {
-        titleArray.push(res[i].title);
+        titleArray.push(res[i].id + " " + res[i].title);
       }
-      console.log(titleArray);
     }
-  });
 
-  connection.query(
-    "SELECT first_name, last_name FROM employees",
-    function (err, res) {
-      if (err) {
-        throw err;
-      } else {
-        for (i = 0; i < res.length; i++) {
-          emptyNamesArray.push(res[i].title);
+    connection.query(
+      "SELECT id,first_name, last_name FROM employees",
+      function (err, res) {
+        if (err) {
+          throw err;
+        } else {
+          for (i = 0; i < res.length; i++) {
+            emptyNamesArray.push(
+              res[i].id + " " + res[i].first_name + " " + res[i].last_name
+            );
+          }
         }
-        console.log(emptyNamesArray);
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "allNames",
+              message: "Select an employee",
+              choices: emptyNamesArray,
+            },
+            {
+              type: "list",
+              name: "allRoles",
+              message: "Select the new role",
+              choices: titleArray,
+            },
+          ])
+          .then(function (ans) {
+            const splitEmployee = ans.allNames.split(" ");
+
+            console.log(splitEmployee[0]);
+            const splitRole = ans.allRoles.split(" ");
+
+            console.log(splitRole[0]);
+            connection.query(
+              "UPDATE employees SET ? WHERE ?",
+              [{ id: splitRole[0] }, { role_id: splitEmployee[0] }],
+              function (err, res) {
+                if (err) {
+                  throw err;
+                } else {
+                  console.log("Employee Updated");
+                  start();
+                }
+              }
+            );
+          });
       }
-    }
-  );
+    );
+  });
 }
