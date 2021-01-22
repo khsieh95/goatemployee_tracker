@@ -30,34 +30,19 @@ function start() {
         type: "list",
         message: "What would you like to do?",
         name: "start",
-        choices: ["Add", "View", "Update Employee Roles", "Quit"],
+        choices: ["Add Employee", "View", "Update Employee Roles", "Quit"],
       },
     ])
     .then(function ({ start }) {
-      if (start === "Add") {
+      if (start === "Add Employee") {
         console.log("adding");
-        add();
+        addEmployee();
       } else if (start === "View") {
         view();
+      } else if (start === "Update Employee Roles") {
+        updateEmployee();
       } else {
         connection.end();
-      }
-    });
-}
-
-function add() {
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "add",
-        message: "What would you like to add?",
-        choices: ["Employee", "Department", "Role"],
-      },
-    ])
-    .then(function (ans) {
-      if (ans.add === "Employee") {
-        addEmployee();
       }
     });
 }
@@ -92,6 +77,11 @@ function addEmployee() {
         message: "Select the department",
         choices: ["HR", "Finance", "Tech"],
       },
+      {
+        type: "number",
+        name: "salary",
+        message: "What is the employees salary?",
+      },
     ])
     .then(function (ans) {
       connection.query(
@@ -101,7 +91,31 @@ function addEmployee() {
           if (err) {
             throw err;
           } else {
-            console.table(res);
+            console.log("name added");
+          }
+        }
+      );
+
+      connection.query(
+        "INSERT INTO departments (department) VALUES (?)",
+        [ans.department],
+        function (err, res) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("department added");
+          }
+        }
+      );
+
+      connection.query(
+        "INSERT INTO roles (title, salary) VALUES (?,?)",
+        [ans.role, ans.salary],
+        function (err, res) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("role added");
           }
         }
       );
@@ -186,20 +200,32 @@ function viewAll() {
 }
 
 function updateEmployee() {
-  const employee = connection.query(
-    "SELECT * FROM employee_tracker_db.employee"
+  const emptyNamesArray = [];
+  let emptyInfoArray;
+  const titleArray = [];
+  let roleInfoArray;
+  connection.query("SELECT title FROM roles", function (err, res) {
+    if (err) {
+      throw err;
+    } else {
+      for (i = 0; i < res.length; i++) {
+        titleArray.push(res[i].title);
+      }
+      console.log(titleArray);
+    }
+  });
+
+  connection.query(
+    "SELECT first_name, last_name FROM employees",
+    function (err, res) {
+      if (err) {
+        throw err;
+      } else {
+        for (i = 0; i < res.length; i++) {
+          emptyNamesArray.push(res[i].title);
+        }
+        console.log(emptyNamesArray);
+      }
+    }
   );
-
-  const employeeArray = [];
-  employeeArray.push(employee);
-  console.table(employeeArray);
-
-  //   inquirer.prompt([
-  //     {
-  //       type: "list",
-  //       name: "udpate",
-  //       message: "Who would you like to update?",
-  //       choices: employee,
-  //     },
-  //   ]);
 }
